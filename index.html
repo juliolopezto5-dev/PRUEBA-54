@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AETERNUM UMU: 2D PIXEL WORLD - STABLE VERSION</title>
+    <style>
+        :root {
+            --bg: #030303; --umu: #8a151b; --grass: #1a301a; --path: #332b24;
+            --text: #c0c0c0; --money: #00ff88; --accent: #ff0044; --skin: #ffdbac;
+        }
+        * { box-sizing: border-box; image-rendering: pixelated; }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+
+        #narrator-kiosko {
+            background: #000; color: #fff; padding: 12px; text-align: center;
+            border-bottom: 2px solid var(--umu); font-style: italic; min-height: 60px;
+            text-shadow: 1px 1px #000; border-left: 10px solid var(--money);
+        }
+
+        #game-container {
+            position: relative; width: 1000px; height: 420px;
+            background: #111; margin: 5px auto;
+            border: 4px solid #333; overflow: hidden;
+            box-shadow: 0 0 30px #000;
+        }
+
+        #world { 
+            position: absolute; width: 1500px; height: 1500px; 
+            background-color: var(--grass);
+            background-image: 
+                radial-gradient(circle, #244224 1px, transparent 1px),
+                linear-gradient(90deg, transparent 400px, var(--path) 400px, var(--path) 480px, transparent 480px),
+                linear-gradient(0deg, transparent 400px, var(--path) 400px, var(--path) 480px, transparent 480px);
+            background-size: 40px 40px, 100% 100%, 100% 100%;
+        }
+
+        .guide-arrow { position: absolute; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 16px solid var(--money); z-index: 500; pointer-events: none; }
+
+        .char-hd { position: absolute; width: 36px; height: 50px; z-index: 100; transition: transform 0.1s; }
+        .head { width: 24px; height: 22px; background: var(--skin); margin: 0 auto; border: 3px solid #000; position: relative; }
+        .hair { width: 100%; height: 8px; background: #3d2b1f; position: absolute; top: -2px; }
+        .eye-p { width: 4px; height: 4px; background: #000; position: absolute; top: 10px; }
+        .eye-p.l { left: 4px; } .eye-p.r { right: 4px; }
+        .body-hd { width: 30px; height: 22px; background: #333; margin: -2px auto 0; border: 3px solid #000; position: relative; }
+        .leg { width: 8px; height: 10px; background: #1a1a1a; position: absolute; bottom: -8px; border: 2px solid #000; }
+        .leg.l { left: 6px; } .leg.r { right: 16px; }
+
+        .building { position: absolute; border: 4px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 10px; box-shadow: 6px 6px 0 rgba(0,0,0,0.5); }
+        .icon-retro { font-size: 30px; margin-bottom: 2px; }
+
+        .campus { background: #5d4037; width: 180px; height: 120px; left: 150px; top: 150px; }
+        .house { background: #455a64; width: 150px; height: 110px; left: 1100px; top: 1100px; }
+        .club { background: #283593; width: 160px; height: 130px; left: 150px; top: 1100px; }
+        .casino { background: #1b5e20; width: 150px; height: 100px; left: 1100px; top: 150px; }
+        .park { background: #2e7d32; width: 300px; height: 200px; left: 600px; top: 600px; border-radius: 40px; }
+        .gym { background: #bf360c; width: 140px; height: 100px; left: 1100px; top: 600px; }
+        .office { background: #37474f; width: 160px; height: 110px; left: 150px; top: 600px; display: none; }
+
+        #ui-layer { display: grid; grid-template-columns: 280px 1fr 280px; gap: 10px; padding: 15px; background: #000; border-top: 4px solid var(--umu); flex-grow: 1; }
+        .bar-out { width: 100%; height: 12px; background: #111; border: 1px solid #333; margin: 4px 0; }
+        .bar-in { height: 100%; transition: 0.5s; width: 100%; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button { background: #111; color: #fff; border: 2px solid #444; padding: 10px; cursor: pointer; font-family: inherit; font-size: 0.75em; text-transform: uppercase; }
+        button:hover { border-color: var(--money); background: #222; }
+        
+        #tutorial-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        #final-screen, #event-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+    </style>
+</head>
+<body>
+
+<div id="narrator-kiosko">Guía: "Bienvenido. Tu futuro se escribe con píxeles y malas decisiones."</div>
+
+<div id="tutorial-screen">
+    <div style="max-width: 600px; border: 4px solid var(--umu); padding: 30px; background: #050505; text-align: center;">
+        <h2 style="color:var(--umu);">AETERNUM UMU</h2>
+        <p style="text-align: left;">• <b>WASD / Flechas</b> para moverte.<br>• <b>Semestres:</b> Se avanza durmiendo en CASA.<br>• <b>Beca:</b> Estudia al 100% (barra naranja).<br>• <b>Salud:</b> Fumar daña los pulmones (HP).</p>
+        <button id="start-btn" style="width:100%; border-color:var(--money); color:var(--money); padding:20px; font-weight:bold; cursor:pointer; background:#111;">COMENZAR VIDA</button>
+    </div>
+</div>
+
+<div id="event-overlay">
+    <div style="text-align:center; max-width:500px;">
+        <h1 style="color:var(--accent)">PRESIÓN SOCIAL</h1>
+        <p>Javi: "Venga, un pitillo. En esta uni si no fumas no eres nadie."</p>
+        <button onclick="firstSmokeAction()" style="border-color:var(--accent); color:var(--accent); padding:20px; cursor:pointer;">FUMAR (OBLIGATORIO)</button>
+    </div>
+</div>
+
+<div id="game-container">
+    <div id="world">
+        <div class="building campus"><span class="icon-retro">📖</span>UMU</div>
+        <div class="building house"><span class="icon-retro">🏠</span>HOGAR</div>
+        <div class="building club"><span class="icon-retro">🍷</span>NIGHT CLUB</div>
+        <div class="building casino"><span class="icon-retro">🎰</span>CASINO</div>
+        <div class="building park"><span class="icon-retro">🌳</span>PARQUE</div>
+        <div class="building gym"><span class="icon-retro">💪</span>GYM</div>
+        <div class="building office" id="b-office"><span class="icon-retro">💼</span>OFICINA</div>
+        
+        <div id="npc-javi" class="char-hd" style="left: 230px; top: 280px;">
+            <div class="head" style="background:#4fc3f7"><div class="hair" style="background:#000"></div><div class="eye-p l"></div><div class="eye-p r"></div></div>
+            <div class="body-hd"></div><div class="leg l"></div><div class="leg r"></div>
+        </div>
+
+        <div id="npc-random" class="char-hd" style="left: 730px; top: 680px; display:none;">
+            <div class="head" id="nr-head"><div class="hair" id="nr-hair"></div><div class="eye-p l"></div><div class="eye-p r"></div></div>
+            <div class="body-hd" id="nr-body"></div><div class="leg l"></div><div class="leg r"></div>
+        </div>
+
+        <div id="player" class="char-hd">
+            <div class="head"><div class="hair"></div><div class="eye-p l"></div><div class="eye-p r"></div></div>
+            <div class="body-hd" id="p-shirt"></div><div class="leg l"></div><div class="leg r"></div>
+        </div>
+    </div>
+    <div id="arrows-container"></div>
+</div>
+
+<div id="ui-layer">
+    <div class="stat-panel">
+        <div>SALUD: <span id="v-hp">100</span>% | MP: <span id="v-mp">100</span>%</div>
+        <div class="bar-out"><div id="b-hp" class="bar-in" style="background:var(--money)"></div></div>
+        <div class="bar-out"><div id="b-mp" class="bar-in" style="background:#3498db"></div></div>
+        <div>ESTUDIOS: <span id="v-study">0</span>%</div>
+        <div class="bar-out"><div id="b-study" class="bar-in" style="background:orange; width:0%"></div></div>
+        <div style="color:var(--money); font-size: 1.1em; margin-top:5px;">CASH: $<span id="v-cash">200</span></div>
+    </div>
+    <div>
+        <div id="event-log" style="background:#080808; border:1px solid #222; padding:10px; height:80px; overflow-y:auto; font-size:0.8em; color:#0f0;">>> Cargando Murcia...</div>
+        <div id="actions" class="action-grid" style="margin-top:5px;"></div>
+    </div>
+    <div class="stat-panel" style="font-size:0.8em; line-height:1.4;">
+        <b>EDAD:</b> <span id="v-age">18</span> | <b>SEM:</b> <span id="v-sem">1</span><br>
+        <b>ENERGÍA:</b> <span id="v-energy">8</span>/8<br>
+        <div id="social-box" style="border-top:1px solid #222; margin-top:5px; padding-top:5px;"></div>
+    </div>
+</div>
+
+<div id="final-screen">
+    <h1 id="final-title">DESTINO SELLADO</h1>
+    <p id="final-msg"></p>
+    <button onclick="location.reload()" style="padding:15px; border:2px solid var(--umu); color:white; background:transparent; cursor:pointer;">REINICIAR</button>
+</div>
+
+<script>
+    let p = { 
+        x: 1080, y: 1080, age: 18, totalSem: 1, hp: 100, mp: 100, cash: 200, energy: 8, 
+        studyProgress: 0, partner: null, loc: "Calle", smoking: false, firstSmoke: true, 
+        padresRel: 100, elenaRel: 100, ownHouse: false, cNpc: null, npcSpawned: false, kids: 0
+    };
+
+    const keys = {};
+    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keyup', e => keys[e.code] = false);
+
+    // INICIALIZACIÓN DEL BOTÓN
+    document.getElementById('start-btn').onclick = function() {
+        document.getElementById('tutorial-screen').style.display = 'none';
+        gameLoop();
+        renderActions(); // Renderiza acciones iniciales
+    };
+
+    function gameLoop() {
+        let speed = 6;
+        let moved = false;
+        if (keys['KeyW'] || keys['ArrowUp']) { p.y -= speed; moved = true; }
+        if (keys['KeyS'] || keys['ArrowDown']) { p.y += speed; moved = true; }
+        if (keys['KeyA'] || keys['ArrowLeft']) { p.x -= speed; moved = true; }
+        if (keys['KeyD'] || keys['ArrowRight']) { p.x += speed; moved = true; }
+
+        if (moved) {
+            p.x = Math.max(0, Math.min(1450, p.x));
+            p.y = Math.max(0, Math.min(1450, p.y));
+            document.getElementById('player').style.left = p.x + 'px';
+            document.getElementById('player').style.top = p.y + 'px';
+            document.getElementById('world').style.transform = `translate(${500 - p.x}px, ${210 - p.y}px)`;
+            checkProximity();
+        }
+        updateArrows();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function checkProximity() {
+        let near = "Calle";
+        if (dist(p.x, p.y, 150, 150, 180, 120)) near = "Campus";
+        else if (dist(p.x, p.y, 1100, 1100, 150, 110)) near = "Casa";
+        else if (dist(p.x, p.y, 150, 1100, 160, 130)) near = "Club";
+        else if (dist(p.x, p.y, 1100, 150, 150, 100)) near = "Casino";
+        else if (dist(p.x, p.y, 600, 600, 300, 200)) near = "Park";
+        else if (dist(p.x, p.y, 1100, 600, 140, 100)) near = "Gym";
+        else if (p.totalSem >= 7 && dist(p.x, p.y, 150, 600, 160, 110)) near = "Office";
+
+        if (p.loc !== near) {
+            p.loc = near;
+            // ARREGLO DEL PARQUE: Solo spawnea una vez
+            if (p.loc === "Park" && !p.npcSpawned) {
+                spawnNpc();
+            } else if (p.loc !== "Park") {
+                document.getElementById('npc-random').style.display = "none";
+                p.npcSpawned = false;
+                p.cNpc = null;
+            }
+            renderActions();
+            if(p.firstSmoke && p.loc === "Campus") document.getElementById('event-overlay').style.display = "flex";
+        }
+    }
+
+    function dist(px, py, x, y, w, h) { return px > x - 20 && px < x + w + 20 && py > y - 20 && py < y + h + 20; }
+
+    function spawnNpc() {
+        const npc = document.getElementById('npc-random');
+        const list = [
+            {n: "Kaze", c: "#000", h: "#333", t: "Guía: '¡Es Kaze! Murcia tiene ritmo.'"},
+            {n: "Lucía", c: "#f06", h: "#f9a", t: "Guía: 'Lucía y sus problemas eternos.'"},
+            {n: "Profesor", c: "#555", h: "#fff", t: "Guía: 'Tu antiguo profesor te vigila.'"},
+            {n: "Perro", c: "#852", h: "#852", t: "Guía: 'Un perro pixelado te mira.'"}
+        ];
+        const res = list[Math.floor(Math.random()*list.length)];
+        p.cNpc = res;
+        p.npcSpawned = true; // Flag de control para evitar el crash
+        npc.style.display = "block";
+        document.getElementById('nr-head').style.background = "#ffdbac";
+        document.getElementById('nr-hair').style.background = res.h;
+        document.getElementById('nr-body').style.background = res.c;
+        say(res.t);
+    }
+
+    function renderActions() {
+        const div = document.getElementById('actions');
+        div.innerHTML = "";
+        const canAct = p.energy > 0;
+
+        if (p.loc === "Casa") {
+            addBtn("DORMIR", () => passSemester());
+            if (canAct && p.cash < 80) addBtn("ROBAR PADRES", () => {
+                if (Math.random() > 0.6) { p.padresRel -= 40; say("¡PILLADO!"); }
+                else { p.cash += 120; say("Robaste $120."); }
+                p.energy--; updateUI(); renderActions();
+            });
+        }
+        
+        if (canAct) {
+            if (p.loc === "Campus") {
+                addBtn("ESTUDIAR (+25%)", () => doAction("Hincas los codos.", 0, -20, 0, 25));
+                if (p.age >= 20 && !p.partner) addBtn("CONOCER ELENA", () => { p.partner = "Elena"; say("Elena es tu novia."); renderActions(); });
+            }
+            if (p.loc === "Club") {
+                addBtn("RAQUEL: DROGA", () => doAction("Vicio caro.", -20, 100, -150));
+                addBtn("BEBER COPAS", () => doAction("Bebes.", -5, 40, -60));
+            }
+            if (p.loc === "Office") {
+                addBtn("TRABAJAR", () => {
+                    let pay = p.smoking ? 300 : 600;
+                    doAction("Jornada terminada.", -2, -30, pay);
+                });
+                if(!p.ownHouse) addBtn("CASA ($2500)", () => { if(p.cash >= 2500){ p.cash-=2500; p.ownHouse=true; say("¡Casa comprada!"); updateUI(); renderActions(); }});
+            }
+            if (p.loc === "Gym") addBtn("ENTRENAR", () => doAction("Músculos.", p.smoking?2:15, 10, -50));
+            if (p.loc === "Casino") addBtn("RULETA", () => { if(Math.random()>0.6) p.cash+=400; else p.cash-=100; p.energy--; updateUI(); renderActions(); });
+            if (p.loc === "Park" && p.cNpc) {
+                addBtn("HABLAR CON " + p.cNpc.n.toUpperCase(), () => doAction("Charla fugaz.", 0, 20, 0));
+            }
+            addBtn(p.smoking ? "FUMAR" : "RECAER", () => { p.padresRel -= 5; if(p.partner) p.elenaRel -= 20; doAction("Humo...", -5, 30, -10); });
+        }
+    }
+
+    function firstSmokeAction() { p.smoking = true; p.firstSmoke = false; document.getElementById('event-overlay').style.display="none"; say("Guía: 'El vicio ha comenzado.'"); updateUI(); renderActions(); }
+    
+    function doAction(m, h, mp, c, s=0) { 
+        p.hp=Math.min(100,p.hp+h); p.mp=Math.min(100,p.mp+mp); p.cash+=c; 
+        p.studyProgress=Math.min(100, p.studyProgress+s); p.energy--; 
+        writeLog(m); updateUI(); renderActions(); 
+    }
+
+    function say(t) { narrator.innerText = t; }
+    function writeLog(t) { const l = document.getElementById('event-log'); l.innerHTML = ">> " + t + "<br>" + l.innerHTML; }
+    function addBtn(t, f) { const b = document.createElement('button'); b.innerText = t; b.onclick = f; document.getElementById('actions').appendChild(b); }
+    
+    function passSemester() {
+        if(p.loc !== "Casa") return;
+        if(p.studyProgress >= 100) { p.cash += 400; say("Beca de $400 recibida."); }
+        p.studyProgress = 0; p.energy = 8; p.totalSem++;
+        if(p.totalSem % 2 === 0) p.age++;
+        if(p.totalSem === 7) document.getElementById('b-office').style.display="flex";
+        p.cash -= 150; if(p.smoking) p.hp -= 12;
+        writeLog("Nuevo semestre iniciado.");
+        updateUI(); renderActions();
+    }
+
+    function updateUI() {
+        document.getElementById('v-hp').innerText = Math.round(p.hp);
+        document.getElementById('v-cash').innerText = p.cash;
+        document.getElementById('v-age').innerText = p.age;
+        document.getElementById('v-sem').innerText = p.totalSem;
+        document.getElementById('v-energy').innerText = p.energy;
+        document.getElementById('b-hp').style.width = p.hp + "%";
+        document.getElementById('b-study').style.width = p.studyProgress + "%";
+        document.getElementById('social-box').innerHTML = `PADRES: ${p.padresRel}% | CASA: ${p.ownHouse?'PROPIA':'ALQUILER'}`;
+        if(p.partner) document.getElementById('social-box').innerHTML += `<br>NOVIA: ELENA (${p.elenaRel}%)`;
+        if(p.hp <= 0) finish("MUERTE POR ENFERMEDAD PULMONAR");
+        if(p.cash <= -200) finish("BANCARROTA");
+    }
+
+    function updateArrows() {
+        const cont = document.getElementById('arrows-container'); cont.innerHTML = "";
+        const dests = [{n:"UMU",x:150,y:150},{n:"CASA",x:1100,y:1100},{n:"CLUB",x:150,y:1100},{n:"PARK",x:650,y:650}];
+        dests.forEach(d => {
+            let dx = d.x - p.x, dy = d.y - p.y;
+            if(Math.sqrt(dx*dx+dy*dy) > 300) {
+                const a = document.createElement('div'); a.className='guide-arrow';
+                let ang = Math.atan2(dy, dx);
+                a.style.left = (500 + Math.cos(ang)*220)+'px'; a.style.top = (210 + Math.sin(ang)*170)+'px';
+                a.style.transform = `translate(-50%,-50%) rotate(${ang*180/Math.PI+90}deg)`;
+                cont.appendChild(a);
+            }
+        });
+    }
+
+    function finish(m) { document.getElementById('master-layout').style.display="none"; document.getElementById('final-screen').style.display="flex"; document.getElementById('final-msg').innerText = m; }
+    
+    // Inicializar UI al cargar
+    updateUI();
+</script>
+</body>
+</html>
