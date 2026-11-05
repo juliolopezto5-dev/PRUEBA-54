@@ -1,324 +1,124 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>AETERNUM UMU: 2D PIXEL WORLD - STABLE VERSION</title>
-    <style>
-        :root {
-            --bg: #030303; --umu: #8a151b; --grass: #1a301a; --path: #332b24;
-            --text: #c0c0c0; --money: #00ff88; --accent: #ff0044; --skin: #ffdbac;
-        }
-        * { box-sizing: border-box; image-rendering: pixelated; }
-        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+Aquí tienes el código fuente completo del archivo HTML:
 
-        #narrator-kiosko {
-            background: #000; color: #fff; padding: 12px; text-align: center;
-            border-bottom: 2px solid var(--umu); font-style: italic; min-height: 60px;
-            text-shadow: 1px 1px #000; border-left: 10px solid var(--money);
-        }
+```html
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Juego de repaso · Temas 1 y 2</title>
+<style>
+:root{--bg:#f7f5f0;--c:#fff;--t:#1d1d1b;--m:#6b6a64;--a:#2a6f97;--ok:#2e7d4f;--ko:#b3402f;--b:#dcd8cc;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--c:#242422;--t:#eeece6;--m:#a3a198;--a:#6bb3d9;--ok:#5fbf86;--ko:#e57b69;--b:#3b3a36;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171716;--c:#242422;--t:#eeece6;--m:#a3a198;--a:#6bb3d9;--ok:#5fbf86;--ko:#e57b69;--b:#3b3a36;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--t);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 8px}
+.top{display:flex;justify-content:space-between;font-size:13px;color:var(--m);margin:6px 0}
+.bar{height:6px;background:var(--b);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--a);width:0;transition:width .3s}
+.card{background:var(--c);border:1px solid var(--b);border-radius:14px;padding:18px;margin-top:12px}
+.tag{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--a);font-weight:600}
+h2{font-size:19px;margin:6px 0 14px;line-height:1.35}
+button{font:inherit;color:inherit;background:var(--c);border:1.5px solid var(--b);border-radius:10px;padding:10px 12px;margin:4px 4px 4px 0;cursor:pointer;text-align:left}
+button:hover:not(:disabled){border-color:var(--a)}
+button:disabled{cursor:default}
+.sel{border-color:var(--a);background:color-mix(in srgb,var(--a) 15%,var(--c))}
+.ok{border-color:var(--ok)!important;background:color-mix(in srgb,var(--ok) 18%,var(--c))}
+.ko{border-color:var(--ko)!important;background:color-mix(in srgb,var(--ko) 18%,var(--c))}
+.go{background:var(--a);color:var(--bg);border-color:var(--a);text-align:center;font-weight:600}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cols>div{display:flex;flex-direction:column}.cols button{width:100%;margin:0 0 6px}
+ol{padding-left:22px;margin:0 0 8px;min-height:8px}
+</style></head><body><main>
+<h1>🎓 Repaso: Temas 1 y 2</h1>
+<div class="top"><span id="n"></span><span id="s"></span></div><div class="bar"><i id="p"></i></div><div id="m"></div>
+</main><script>
+const D=[
+["f","La dirección escolar depende de la historia del ___ en el que se encuadra (Vázquez, 2013).","país","centro","claustro","alumnado"],
+["f","La OCDE señala que no existe ___ sobre cómo organizar y ejercer la dirección.","consenso","sanción","presupuesto","norma"],
+["f","Hasta 2008 el director en España era un ___ elegido por sus propios compañeros.","colega","inspector","gerente","delegado ministerial"],
+["f","Identidad «transeunte»: Docente – ___ – Docente (Bolívar, 2016).","Director","Inspector","Orientador","Tutor"],
+["f","Diferencia clave: estar o ejercer de director frente a ___ o sentirse director.","ser","tener","dejar de","querer"],
+["f","LOMCE (art. 71): la comisión de selección tiene ___ del 50 % de representantes del centro.","menos","más","exactamente el","todo el"],
+["f","La acreditación previa para dirigir se desarrolla en el Real Decreto ___/2014.","894","132","120","127"],
+["f","Viñao: el modelo LOMCE contradice el principio de dar ___ a los centros.","autonomía","competencia","financiación","evaluación"],
+["f","Quien gobierna desarrolla la ___; quien dirige hace que se cumpla.","política","gestión","rutina","inspección"],
+["f","Autonomía ___: capacidad de elaborar el propio proyecto educativo.","pedagógica","organizativa","de gestión","política"],
+["f","Los centros difieren mucho en autonomía organizativa y de ___ (económica).","gestión","currículo","pedagogía","liderazgo"],
+["f","Tareas de gestión: planificar, organizar, ejecutar y ___.","controlar","liderar","inspirar","negociar"],
+["f","Gestión negativa: actividad ___, poco creativa, centrada en lo administrativo.","burocrática","colegiada","distribuida","pedagógica"],
+["f","Liderazgo = sentido de ___ + influencia mediante trabajo relacional.","visión","jerarquía","control","sanción"],
+["f","Robinson: la influencia no se basa en fuerza, coerción ni ___.","manipulación","experiencia","autoridad formal","cualidades"],
+["f","El liderazgo explica hasta un ___ % de la variabilidad entre escuelas.","25","5","50","75"],
+["f","González (2017): la influencia del director sobre los resultados es ___.","indirecta","directa","nula","automática"],
+["f","El liderazgo transaccional busca mantener el ___.","statu quo","cambio","consenso","conflicto"],
+["f","El transformacional influye en la ___ de la escuela mediante la misión o visión.","cultura","normativa","jerarquía","plantilla"],
+["f","El liderazgo sistémico integra aula, escuela y ___.","sistema educativo","familia","claustro","inspección"],
+["f","Fullan: la dirección escolar es el centro ___ de la mejora.","neurálgico","burocrático","jerárquico","periférico"],
+["f","Goleman (2014) es el autor del liderazgo ___.","emocional","sistémico","transaccional","instruccional"],
+["f","El liderazgo no es innato: se ___.","aprende","hereda","elige","impone"],
+["f","Las redes escolares desarrollan líderes ___.","intermedios","únicos","externos","vitalicios"],
+["v","Hasta 2008 el director español era designado solo por la Administración.",0,"Era un colega elegido por sus compañeros."],
+["v","Gestión y liderazgo son distintos pero complementarios.",1,"Ambos son formas de ejercer la dirección."],
+["v","La ley actual asegura la capacidad pedagógica de la dirección.",0,"Nada en la ley la asegura; refuerza lo ejecutivo."],
+["v","El liderazgo se identifica con quien ocupa una posición formal de autoridad.",0,"Hoy es una cualidad organizativa, compartida."],
+["v","El liderazgo transaccional busca grandes cambios.",0,"Mantiene el statu quo mediante intercambios."],
+["v","Todos los tipos de centro tienen una autonomía pedagógica similar.",1,"Difieren sobre todo en organización y gestión."],
+["v","El liderazgo distribuido se considera una faceta del transformacional.",1,"Así lo recoge el tema."],
+["v","España es de los países con más competencias para sus equipos directivos.",0,"Es de los que menos, y por tanto menos autonomía."],
+["v","Robinson propone seis dimensiones de un liderazgo eficaz.",1,"Objetivos, recursos, enseñanza, aprendizaje docente, entorno y comunidad."],
+["v","Hay que seleccionar líderes, no formarlos.",0,"Se debe formar: el liderazgo se aprende."],
+["m","Autor ↔ idea",["Vázquez 2013","Dirección ligada a la historia del país"],["Day y Gu 2015","Identidad ≠ rol"],["Viñao 2015","LOMCE contradice la autonomía"],["Bolívar 2016","Identidad transeunte"],["Fullan 2006","Centro neurálgico de mejora"],["Goleman 2014","Liderazgo emocional"]],
+["m","Ley ↔ año",["LGE","1970"],["LOECE","1980"],["LODE","1985"],["LOGSE","1990"],["LOPEGCE","1995"],["LOE","2006"]],
+["m","Autonomía ↔ ejemplo",["Pedagógica","Proyecto educativo"],["Organizativa","Horarios y normas de convivencia"],["De gestión","Recursos humanos, materiales y económicos"]],
+["m","Concepto ↔ definición",["Gobierno","Fija finalidades y política"],["Dirección","Hace que la política se cumpla"],["Gestión","Que la organización funcione"],["Liderazgo","Influir en otros hacia metas comunes"]],
+["m","Tarea de gestión ↔ en qué consiste",["Planificar","Redactar planes de actuación"],["Organizar","Ordenar recursos y repartir tareas"],["Ejecutar","Coordinar para realizar lo previsto"],["Controlar","Evaluar y dar feedback"]],
+["m","Modelo ↔ clave",["Transformacional","Visión, cambio y confianza"],["Transaccional","Intercambio de recompensas"],["Distribuido","Acción concertada entre docentes"],["Sistémico","Mejora a escala de sistema"],["Pedagógico","Currículo y clima de aprendizaje"]],
+["m","Práctica de Leithwood ↔ acción",["Establecer dirección","Fijar altas expectativas"],["Desarrollar personal","Tiempos para compartir buenas prácticas"],["Rediseñar organización","Tiempos comunes de planificación"],["Gestionar programas","Supervisar y evaluar la enseñanza"]],
+["m","Tipo de liderazgo ↔ foco",["Justicia social","Equidad y cultura inclusiva"],["Emocional","Inteligencia emocional y empatía"],["Pedagógico","Mejorar enseñanza-aprendizaje"],["Distribuido","Agente de cambio y colaboración"]],
+["o","Ordena el ciclo de gestión","Planificar","Organizar","Ejecutar","Controlar"],
+["o","Ordena las leyes cronológicamente","LGE","LOGSE","LOE","LOMCE","LOMLOE"],
+["o","Cadena lógica: ¿de dónde nace la dirección?","Autonomía del centro","Necesidad de gobierno","Existencia de la dirección"],
+["o","Ordena de lo más local a lo más amplio","Aula","Escuela","Sistema educativo"],
+["s","Gestión o liderazgo pedagógico","Gestión","Liderazgo",["Tareas administrativas",0],["Decisiones jerárquicas",0],["Cumplir la normativa",0],["Visión común",1],["Cultura de aprendizaje",1],["Transformar actitudes",1]],
+["s","Transformacional o transaccional","Transformacional","Transaccional",["Misión compartida",0],["Estimular el cambio",0],["Intercambio de recompensas",1],["Mantener el statu quo",1]],
+["s","Gobierno o dirección","Gobierno","Dirección",["Establecer finalidades",0],["Directrices generales",0],["Poner en práctica la política",1],["Máximo responsable ejecutivo",1]],
+["s","Antes de 2008 o LOMCE","Antes de 2008","LOMCE",["Colega elegido",0],["Escasa participación en consejos",0],["Comisión con menos del 50 % del centro",1],["Curso de acreditación previo",1]],
+["x","Prácticas de Leithwood","Pagar nóminas","Establecer dirección","Desarrollar al personal","Rediseñar la organización"],
+["x","Tipos de liderazgo educativo","Autocrático","Transformacional","Distribuido","Emocional"],
+["x","Tipos de autonomía","Política","Pedagógica","Organizativa","De gestión"],
+["x","Problemas de la dirección antes de 2008","Incentivos altos","Exceso de burocracia","Falta de apoyo","Déficit de formación"],
+["x","Atributos de redes efectivas","Estructuras verticales","Confianza compartida","Indagación colectiva","Alianzas con la comunidad"],
+["x","Dimensiones de Robinson","Seleccionar líderes natos","Asignar recursos","Asegurar enseñanza de calidad","Fijar objetivos y expectativas"],
+["k","Directrices OCDE (elige las 4)",["Profesionalizar la dirección","Mejorar la formación","Incrementar la autonomía","Dirección menos burocrática"],["Más burocracia","Reducir autonomía"]],
+["k","¿De dónde viene la influencia legítima?",["Autoridad formal razonable","Cualidades del líder","Conocimiento y experiencia"],["Coerción","Manipulación"]],
+["k","Novedades de la LOMCE",["Comisión con menos del 50 % del centro","Acreditación previa","Competencia entre centros"],["Director elegido por el claustro","Más peso del Consejo Escolar"]],
+["k","Ejes de González (2017)",["Aprendizaje como núcleo","Influencia indirecta","No se ejerce en solitario"],["Influencia directa","El director decide solo"]],
+["k","Impacto esperado de las redes",["Mejora de la enseñanza","Mayor aprendizaje estudiantil","Innovación y colaboración","Transformación educativa"],["Más jerarquía","Aislamiento docente"]],
+["k","Tipos de liderazgo educativo",["Transformacional","Distribuido","Pedagógico","Para la justicia social","Emocional"],["Autocrático","Laissez-faire"]]
+];
+const $=s=>document.querySelector(s),sh=a=>[...a].sort(()=>Math.random()-.5),E=(t,c,x,f)=>{const e=document.createElement(t);e.className=c||"";e.textContent=x||"";if(f)e.onclick=()=>f(e);return e};
+const T={f:"Completa",v:"Verdadero o falso",m:"Une las parejas",o:"Ordena",s:"Clasifica",x:"Encuentra el intruso",k:"Marca todas las correctas"};
+let Q,i,A,B,R;
+function start(){Q=sh(D).map(d=>({d,r:0}));i=A=B=R=0;show()}
+function show(){const m=$("#m");m.textContent="";if(i>=Q.length)return end();const d=Q[i].d,c=E("div","card");$("#p").style.width=100*i/Q.length+"%";$("#n").textContent="Pregunta "+(i+1)+" de "+Q.length;$("#s").textContent="✔ "+A+" · ✘ "+B;c.append(E("div","tag",T[d[0]]),E("h2","",d[1]));W[d[0]](d,c);m.append(c)}
+function fin(ok,msg,c){const it=Q[i];ok?A++:B++;if(!ok&&it.r<2){it.r++;Q.push(it);R++}const f=E("p","",(ok?"✔ ¡Bien! ":"✘ ")+(msg||"")+(ok?"":" Volverá a salir."));f.style.color=ok?"var(--ok)":"var(--ko)";c.append(f,E("button","go","Siguiente →",()=>{i++;show()}))}
+function pick(e,ok,c,msg){c.querySelectorAll("button").forEach(b=>{b.disabled=1;if(b.dataset.r)b.classList.add("ok")});if(!ok)e.classList.add("ko");fin(ok,msg,c)}
+const O=(c,t,r,msg)=>{const b=E("button","",t,e=>pick(e,r,c,msg));if(r)b.dataset.r=1;c.append(b)};
+const bad=b=>{b.classList.add("ko");setTimeout(()=>b.classList.remove("ko"),400)};
+const W={
+f(d,c){sh(d.slice(2)).forEach(o=>O(c,o,o==d[2],"Era «"+d[2]+"»."))},
+v(d,c){O(c,"Verdadero",!!d[2],d[3]);O(c,"Falso",!d[2],d[3])},
+x(d,c){sh(d.slice(2)).forEach(o=>O(c,o,o==d[2],"El intruso era «"+d[2]+"»."))},
+m(d,c){const P=d.slice(2);let s,n=0,x=0;const g=E("div","cols"),a=E("div"),b2=E("div");
+P.forEach((p,k)=>{const b=E("button","",p[0],()=>{s&&s.classList.remove("sel");s=b;b.classList.add("sel")});b.dataset.k=k;a.append(b)});
+sh(P.map((p,k)=>[p[1],k])).forEach(([t,k])=>{const b=E("button","",t,()=>{if(!s)return;if(s.dataset.k==k){s.className=b.className="ok";s.disabled=b.disabled=1;s=0;if(++n==P.length)fin(x<2,x?x+" fallo(s).":"Sin fallos.",c)}else{x++;bad(b)}});b2.append(b)});
+g.append(a,b2);c.append(g)},
+o(d,c){const S=d.slice(2),l=E("ol");let n=0,x=0;c.append(l);sh(S).forEach(t=>{const b=E("button","",t,()=>{if(t==S[n]){b.disabled=1;b.classList.add("ok");l.append(E("li","",t));if(++n==S.length)fin(x<2,S.join(" → "),c)}else{x++;bad(b)}});c.append(b)})},
+s(d,c){const I=d.slice(4),z=E("div"),cs=E("div","cols"),ls=[E("div"),E("div")];let sel,n=0,x=0;
+sh(I).forEach(([t,k])=>{const b=E("button","",t,()=>{sel&&sel.classList.remove("sel");sel=b;b.classList.add("sel")});b.k=k;z.append(b)});
+[2,3].forEach((q,j)=>{const col=E("div"),h=E("button","go",d[q],()=>{if(!sel)return;if(sel.k==j){sel.classList.remove("sel");sel.classList.add("ok");sel.disabled=1;ls[j].append(sel);sel=0;if(++n==I.length)fin(x<2,x?x+" fallo(s).":"Sin fallos.",c)}else{x++;bad(sel)}});col.append(h,ls[j]);cs.append(col)});
+c.append(z,cs)},
+k(d,c){const C=d[2],S=new Set;sh([...C,...d[3]]).forEach(t=>{const b=E("button","",t,()=>{S.has(t)?S.delete(t):S.add(t);b.classList.toggle("sel")});b.dataset.t=t;c.append(b)});
+const g=E("button","go","Comprobar",()=>{const ok=S.size==C.length&&C.every(t=>S.has(t));g.remove();c.querySelectorAll("button").forEach(b=>{b.disabled=1;b.classList.remove("sel");b.classList.add(C.includes(b.dataset.t)?"ok":"ko")});fin(ok,ok?"":"Correctas: "+C.join(", "),c)});c.append(E("br"),g)}
+};
+function end(){$("#p").style.width="100%";$("#n").textContent="Fin";const c=E("div","card");c.append(E("h2","","¡Ronda terminada!"),E("p","","Aciertos: "+A+" · Fallos: "+B+" · Repeticiones: "+R),E("p","","Lo que fallas vuelve a salir hasta 2 veces. Pulsa para otra ronda mezclada."),E("button","go","Jugar otra vez",start));$("#m").append(c)}
+start();
+</script></body></html>
 
-        #game-container {
-            position: relative; width: 1000px; height: 420px;
-            background: #111; margin: 5px auto;
-            border: 4px solid #333; overflow: hidden;
-            box-shadow: 0 0 30px #000;
-        }
-
-        #world { 
-            position: absolute; width: 1500px; height: 1500px; 
-            background-color: var(--grass);
-            background-image: 
-                radial-gradient(circle, #244224 1px, transparent 1px),
-                linear-gradient(90deg, transparent 400px, var(--path) 400px, var(--path) 480px, transparent 480px),
-                linear-gradient(0deg, transparent 400px, var(--path) 400px, var(--path) 480px, transparent 480px);
-            background-size: 40px 40px, 100% 100%, 100% 100%;
-        }
-
-        .guide-arrow { position: absolute; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 16px solid var(--money); z-index: 500; pointer-events: none; }
-
-        .char-hd { position: absolute; width: 36px; height: 50px; z-index: 100; transition: transform 0.1s; }
-        .head { width: 24px; height: 22px; background: var(--skin); margin: 0 auto; border: 3px solid #000; position: relative; }
-        .hair { width: 100%; height: 8px; background: #3d2b1f; position: absolute; top: -2px; }
-        .eye-p { width: 4px; height: 4px; background: #000; position: absolute; top: 10px; }
-        .eye-p.l { left: 4px; } .eye-p.r { right: 4px; }
-        .body-hd { width: 30px; height: 22px; background: #333; margin: -2px auto 0; border: 3px solid #000; position: relative; }
-        .leg { width: 8px; height: 10px; background: #1a1a1a; position: absolute; bottom: -8px; border: 2px solid #000; }
-        .leg.l { left: 6px; } .leg.r { right: 16px; }
-
-        .building { position: absolute; border: 4px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 10px; box-shadow: 6px 6px 0 rgba(0,0,0,0.5); }
-        .icon-retro { font-size: 30px; margin-bottom: 2px; }
-
-        .campus { background: #5d4037; width: 180px; height: 120px; left: 150px; top: 150px; }
-        .house { background: #455a64; width: 150px; height: 110px; left: 1100px; top: 1100px; }
-        .club { background: #283593; width: 160px; height: 130px; left: 150px; top: 1100px; }
-        .casino { background: #1b5e20; width: 150px; height: 100px; left: 1100px; top: 150px; }
-        .park { background: #2e7d32; width: 300px; height: 200px; left: 600px; top: 600px; border-radius: 40px; }
-        .gym { background: #bf360c; width: 140px; height: 100px; left: 1100px; top: 600px; }
-        .office { background: #37474f; width: 160px; height: 110px; left: 150px; top: 600px; display: none; }
-
-        #ui-layer { display: grid; grid-template-columns: 280px 1fr 280px; gap: 10px; padding: 15px; background: #000; border-top: 4px solid var(--umu); flex-grow: 1; }
-        .bar-out { width: 100%; height: 12px; background: #111; border: 1px solid #333; margin: 4px 0; }
-        .bar-in { height: 100%; transition: 0.5s; width: 100%; }
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { background: #111; color: #fff; border: 2px solid #444; padding: 10px; cursor: pointer; font-family: inherit; font-size: 0.75em; text-transform: uppercase; }
-        button:hover { border-color: var(--money); background: #222; }
-        
-        #tutorial-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        #final-screen, #event-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-    </style>
-</head>
-<body>
-
-<div id="narrator-kiosko">Guía: "Bienvenido. Tu futuro se escribe con píxeles y malas decisiones."</div>
-
-<div id="tutorial-screen">
-    <div style="max-width: 600px; border: 4px solid var(--umu); padding: 30px; background: #050505; text-align: center;">
-        <h2 style="color:var(--umu);">AETERNUM UMU</h2>
-        <p style="text-align: left;">• <b>WASD / Flechas</b> para moverte.<br>• <b>Semestres:</b> Se avanza durmiendo en CASA.<br>• <b>Beca:</b> Estudia al 100% (barra naranja).<br>• <b>Salud:</b> Fumar daña los pulmones (HP).</p>
-        <button id="start-btn" style="width:100%; border-color:var(--money); color:var(--money); padding:20px; font-weight:bold; cursor:pointer; background:#111;">COMENZAR VIDA</button>
-    </div>
-</div>
-
-<div id="event-overlay">
-    <div style="text-align:center; max-width:500px;">
-        <h1 style="color:var(--accent)">PRESIÓN SOCIAL</h1>
-        <p>Javi: "Venga, un pitillo. En esta uni si no fumas no eres nadie."</p>
-        <button onclick="firstSmokeAction()" style="border-color:var(--accent); color:var(--accent); padding:20px; cursor:pointer;">FUMAR (OBLIGATORIO)</button>
-    </div>
-</div>
-
-<div id="game-container">
-    <div id="world">
-        <div class="building campus"><span class="icon-retro">📖</span>UMU</div>
-        <div class="building house"><span class="icon-retro">🏠</span>HOGAR</div>
-        <div class="building club"><span class="icon-retro">🍷</span>NIGHT CLUB</div>
-        <div class="building casino"><span class="icon-retro">🎰</span>CASINO</div>
-        <div class="building park"><span class="icon-retro">🌳</span>PARQUE</div>
-        <div class="building gym"><span class="icon-retro">💪</span>GYM</div>
-        <div class="building office" id="b-office"><span class="icon-retro">💼</span>OFICINA</div>
-        
-        <div id="npc-javi" class="char-hd" style="left: 230px; top: 280px;">
-            <div class="head" style="background:#4fc3f7"><div class="hair" style="background:#000"></div><div class="eye-p l"></div><div class="eye-p r"></div></div>
-            <div class="body-hd"></div><div class="leg l"></div><div class="leg r"></div>
-        </div>
-
-        <div id="npc-random" class="char-hd" style="left: 730px; top: 680px; display:none;">
-            <div class="head" id="nr-head"><div class="hair" id="nr-hair"></div><div class="eye-p l"></div><div class="eye-p r"></div></div>
-            <div class="body-hd" id="nr-body"></div><div class="leg l"></div><div class="leg r"></div>
-        </div>
-
-        <div id="player" class="char-hd">
-            <div class="head"><div class="hair"></div><div class="eye-p l"></div><div class="eye-p r"></div></div>
-            <div class="body-hd" id="p-shirt"></div><div class="leg l"></div><div class="leg r"></div>
-        </div>
-    </div>
-    <div id="arrows-container"></div>
-</div>
-
-<div id="ui-layer">
-    <div class="stat-panel">
-        <div>SALUD: <span id="v-hp">100</span>% | MP: <span id="v-mp">100</span>%</div>
-        <div class="bar-out"><div id="b-hp" class="bar-in" style="background:var(--money)"></div></div>
-        <div class="bar-out"><div id="b-mp" class="bar-in" style="background:#3498db"></div></div>
-        <div>ESTUDIOS: <span id="v-study">0</span>%</div>
-        <div class="bar-out"><div id="b-study" class="bar-in" style="background:orange; width:0%"></div></div>
-        <div style="color:var(--money); font-size: 1.1em; margin-top:5px;">CASH: $<span id="v-cash">200</span></div>
-    </div>
-    <div>
-        <div id="event-log" style="background:#080808; border:1px solid #222; padding:10px; height:80px; overflow-y:auto; font-size:0.8em; color:#0f0;">>> Cargando Murcia...</div>
-        <div id="actions" class="action-grid" style="margin-top:5px;"></div>
-    </div>
-    <div class="stat-panel" style="font-size:0.8em; line-height:1.4;">
-        <b>EDAD:</b> <span id="v-age">18</span> | <b>SEM:</b> <span id="v-sem">1</span><br>
-        <b>ENERGÍA:</b> <span id="v-energy">8</span>/8<br>
-        <div id="social-box" style="border-top:1px solid #222; margin-top:5px; padding-top:5px;"></div>
-    </div>
-</div>
-
-<div id="final-screen">
-    <h1 id="final-title">DESTINO SELLADO</h1>
-    <p id="final-msg"></p>
-    <button onclick="location.reload()" style="padding:15px; border:2px solid var(--umu); color:white; background:transparent; cursor:pointer;">REINICIAR</button>
-</div>
-
-<script>
-    let p = { 
-        x: 1080, y: 1080, age: 18, totalSem: 1, hp: 100, mp: 100, cash: 200, energy: 8, 
-        studyProgress: 0, partner: null, loc: "Calle", smoking: false, firstSmoke: true, 
-        padresRel: 100, elenaRel: 100, ownHouse: false, cNpc: null, npcSpawned: false, kids: 0
-    };
-
-    const keys = {};
-    window.addEventListener('keydown', e => keys[e.code] = true);
-    window.addEventListener('keyup', e => keys[e.code] = false);
-
-    // INICIALIZACIÓN DEL BOTÓN
-    document.getElementById('start-btn').onclick = function() {
-        document.getElementById('tutorial-screen').style.display = 'none';
-        gameLoop();
-        renderActions(); // Renderiza acciones iniciales
-    };
-
-    function gameLoop() {
-        let speed = 6;
-        let moved = false;
-        if (keys['KeyW'] || keys['ArrowUp']) { p.y -= speed; moved = true; }
-        if (keys['KeyS'] || keys['ArrowDown']) { p.y += speed; moved = true; }
-        if (keys['KeyA'] || keys['ArrowLeft']) { p.x -= speed; moved = true; }
-        if (keys['KeyD'] || keys['ArrowRight']) { p.x += speed; moved = true; }
-
-        if (moved) {
-            p.x = Math.max(0, Math.min(1450, p.x));
-            p.y = Math.max(0, Math.min(1450, p.y));
-            document.getElementById('player').style.left = p.x + 'px';
-            document.getElementById('player').style.top = p.y + 'px';
-            document.getElementById('world').style.transform = `translate(${500 - p.x}px, ${210 - p.y}px)`;
-            checkProximity();
-        }
-        updateArrows();
-        requestAnimationFrame(gameLoop);
-    }
-
-    function checkProximity() {
-        let near = "Calle";
-        if (dist(p.x, p.y, 150, 150, 180, 120)) near = "Campus";
-        else if (dist(p.x, p.y, 1100, 1100, 150, 110)) near = "Casa";
-        else if (dist(p.x, p.y, 150, 1100, 160, 130)) near = "Club";
-        else if (dist(p.x, p.y, 1100, 150, 150, 100)) near = "Casino";
-        else if (dist(p.x, p.y, 600, 600, 300, 200)) near = "Park";
-        else if (dist(p.x, p.y, 1100, 600, 140, 100)) near = "Gym";
-        else if (p.totalSem >= 7 && dist(p.x, p.y, 150, 600, 160, 110)) near = "Office";
-
-        if (p.loc !== near) {
-            p.loc = near;
-            // ARREGLO DEL PARQUE: Solo spawnea una vez
-            if (p.loc === "Park" && !p.npcSpawned) {
-                spawnNpc();
-            } else if (p.loc !== "Park") {
-                document.getElementById('npc-random').style.display = "none";
-                p.npcSpawned = false;
-                p.cNpc = null;
-            }
-            renderActions();
-            if(p.firstSmoke && p.loc === "Campus") document.getElementById('event-overlay').style.display = "flex";
-        }
-    }
-
-    function dist(px, py, x, y, w, h) { return px > x - 20 && px < x + w + 20 && py > y - 20 && py < y + h + 20; }
-
-    function spawnNpc() {
-        const npc = document.getElementById('npc-random');
-        const list = [
-            {n: "Kaze", c: "#000", h: "#333", t: "Guía: '¡Es Kaze! Murcia tiene ritmo.'"},
-            {n: "Lucía", c: "#f06", h: "#f9a", t: "Guía: 'Lucía y sus problemas eternos.'"},
-            {n: "Profesor", c: "#555", h: "#fff", t: "Guía: 'Tu antiguo profesor te vigila.'"},
-            {n: "Perro", c: "#852", h: "#852", t: "Guía: 'Un perro pixelado te mira.'"}
-        ];
-        const res = list[Math.floor(Math.random()*list.length)];
-        p.cNpc = res;
-        p.npcSpawned = true; // Flag de control para evitar el crash
-        npc.style.display = "block";
-        document.getElementById('nr-head').style.background = "#ffdbac";
-        document.getElementById('nr-hair').style.background = res.h;
-        document.getElementById('nr-body').style.background = res.c;
-        say(res.t);
-    }
-
-    function renderActions() {
-        const div = document.getElementById('actions');
-        div.innerHTML = "";
-        const canAct = p.energy > 0;
-
-        if (p.loc === "Casa") {
-            addBtn("DORMIR", () => passSemester());
-            if (canAct && p.cash < 80) addBtn("ROBAR PADRES", () => {
-                if (Math.random() > 0.6) { p.padresRel -= 40; say("¡PILLADO!"); }
-                else { p.cash += 120; say("Robaste $120."); }
-                p.energy--; updateUI(); renderActions();
-            });
-        }
-        
-        if (canAct) {
-            if (p.loc === "Campus") {
-                addBtn("ESTUDIAR (+25%)", () => doAction("Hincas los codos.", 0, -20, 0, 25));
-                if (p.age >= 20 && !p.partner) addBtn("CONOCER ELENA", () => { p.partner = "Elena"; say("Elena es tu novia."); renderActions(); });
-            }
-            if (p.loc === "Club") {
-                addBtn("RAQUEL: DROGA", () => doAction("Vicio caro.", -20, 100, -150));
-                addBtn("BEBER COPAS", () => doAction("Bebes.", -5, 40, -60));
-            }
-            if (p.loc === "Office") {
-                addBtn("TRABAJAR", () => {
-                    let pay = p.smoking ? 300 : 600;
-                    doAction("Jornada terminada.", -2, -30, pay);
-                });
-                if(!p.ownHouse) addBtn("CASA ($2500)", () => { if(p.cash >= 2500){ p.cash-=2500; p.ownHouse=true; say("¡Casa comprada!"); updateUI(); renderActions(); }});
-            }
-            if (p.loc === "Gym") addBtn("ENTRENAR", () => doAction("Músculos.", p.smoking?2:15, 10, -50));
-            if (p.loc === "Casino") addBtn("RULETA", () => { if(Math.random()>0.6) p.cash+=400; else p.cash-=100; p.energy--; updateUI(); renderActions(); });
-            if (p.loc === "Park" && p.cNpc) {
-                addBtn("HABLAR CON " + p.cNpc.n.toUpperCase(), () => doAction("Charla fugaz.", 0, 20, 0));
-            }
-            addBtn(p.smoking ? "FUMAR" : "RECAER", () => { p.padresRel -= 5; if(p.partner) p.elenaRel -= 20; doAction("Humo...", -5, 30, -10); });
-        }
-    }
-
-    function firstSmokeAction() { p.smoking = true; p.firstSmoke = false; document.getElementById('event-overlay').style.display="none"; say("Guía: 'El vicio ha comenzado.'"); updateUI(); renderActions(); }
-    
-    function doAction(m, h, mp, c, s=0) { 
-        p.hp=Math.min(100,p.hp+h); p.mp=Math.min(100,p.mp+mp); p.cash+=c; 
-        p.studyProgress=Math.min(100, p.studyProgress+s); p.energy--; 
-        writeLog(m); updateUI(); renderActions(); 
-    }
-
-    function say(t) { narrator.innerText = t; }
-    function writeLog(t) { const l = document.getElementById('event-log'); l.innerHTML = ">> " + t + "<br>" + l.innerHTML; }
-    function addBtn(t, f) { const b = document.createElement('button'); b.innerText = t; b.onclick = f; document.getElementById('actions').appendChild(b); }
-    
-    function passSemester() {
-        if(p.loc !== "Casa") return;
-        if(p.studyProgress >= 100) { p.cash += 400; say("Beca de $400 recibida."); }
-        p.studyProgress = 0; p.energy = 8; p.totalSem++;
-        if(p.totalSem % 2 === 0) p.age++;
-        if(p.totalSem === 7) document.getElementById('b-office').style.display="flex";
-        p.cash -= 150; if(p.smoking) p.hp -= 12;
-        writeLog("Nuevo semestre iniciado.");
-        updateUI(); renderActions();
-    }
-
-    function updateUI() {
-        document.getElementById('v-hp').innerText = Math.round(p.hp);
-        document.getElementById('v-cash').innerText = p.cash;
-        document.getElementById('v-age').innerText = p.age;
-        document.getElementById('v-sem').innerText = p.totalSem;
-        document.getElementById('v-energy').innerText = p.energy;
-        document.getElementById('b-hp').style.width = p.hp + "%";
-        document.getElementById('b-study').style.width = p.studyProgress + "%";
-        document.getElementById('social-box').innerHTML = `PADRES: ${p.padresRel}% | CASA: ${p.ownHouse?'PROPIA':'ALQUILER'}`;
-        if(p.partner) document.getElementById('social-box').innerHTML += `<br>NOVIA: ELENA (${p.elenaRel}%)`;
-        if(p.hp <= 0) finish("MUERTE POR ENFERMEDAD PULMONAR");
-        if(p.cash <= -200) finish("BANCARROTA");
-    }
-
-    function updateArrows() {
-        const cont = document.getElementById('arrows-container'); cont.innerHTML = "";
-        const dests = [{n:"UMU",x:150,y:150},{n:"CASA",x:1100,y:1100},{n:"CLUB",x:150,y:1100},{n:"PARK",x:650,y:650}];
-        dests.forEach(d => {
-            let dx = d.x - p.x, dy = d.y - p.y;
-            if(Math.sqrt(dx*dx+dy*dy) > 300) {
-                const a = document.createElement('div'); a.className='guide-arrow';
-                let ang = Math.atan2(dy, dx);
-                a.style.left = (500 + Math.cos(ang)*220)+'px'; a.style.top = (210 + Math.sin(ang)*170)+'px';
-                a.style.transform = `translate(-50%,-50%) rotate(${ang*180/Math.PI+90}deg)`;
-                cont.appendChild(a);
-            }
-        });
-    }
-
-    function finish(m) { document.getElementById('master-layout').style.display="none"; document.getElementById('final-screen').style.display="flex"; document.getElementById('final-msg').innerText = m; }
-    
-    // Inicializar UI al cargar
-    updateUI();
-</script>
-</body>
-</html>
+`
